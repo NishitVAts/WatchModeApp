@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
 
 struct DetailView: View {
     let title: TitleModel

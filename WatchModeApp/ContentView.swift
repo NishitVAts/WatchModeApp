@@ -1,8 +1,8 @@
 //
-//  ContentView.swift
+//  DetailScreen.swift
 //  WatchModeApp
 //
-//  Created by Nishit Vats on 03/02/25.
+//  Created by Nishit Vats on 04/02/25.
 //
 
 import SwiftUI
@@ -10,57 +10,56 @@ import SwiftUI
 
 
 struct ContentView: View {
-    @StateObject var vm = TitleViewModel()
-    @State private var selectedCategory: category = .both
+    @StateObject private var viewModel = TitleViewModel()
+    @State private var showMovies = true
+
+    var displayedTitles: [TitleModel] {
+        showMovies ? viewModel.movies : viewModel.tvShows
+    }
 
     var body: some View {
         NavigationView {
             VStack {
-                // Picker for category selection
-                Picker("Select Category", selection: $selectedCategory) {
-                    ForEach(category.allCases, id: \.self) { cat in
-                        Text(cat.rawValue.capitalized).tag(cat)
-                    }
+                Picker("Select Type", selection: $showMovies) {
+                    Text("Movies").tag(true)
+                    Text("TV Shows").tag(false)
                 }
-                .pickerStyle(.segmented)
+                .pickerStyle(SegmentedPickerStyle())
                 .padding()
 
-                if let error = vm.errorMessage {
-                    Text(error)
-                        .foregroundColor(.red)
-                        .bold()
-                        .padding()
-                } else if vm.isLoading {
+                if viewModel.isLoading {
                     ScrollView{
-                        ForEach(0..<15, id: \.self) { _ in
+                        ForEach(0..<10) { title in
                             TitleRowSkeletonView()
-                        }.padding()
-                    }
-                } else {
-                    List(vm.titles) { title in
-                        NavigationLink {
-                            DetailView(title: title)
-                        } label: {
-                            TitleRowView(title: title)
                         }
                     }
-                    .listStyle(PlainListStyle())
-                    .refreshable {
-                        vm.fetchTitles()
+                   
+                        .padding()
+                } else if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .padding()
+                } else {
+                    ScrollView {
+                        LazyVStack {
+                            ForEach(displayedTitles) { title in
+                                NavigationLink(destination: DetailView(title: title)) {
+                                    TitleRowView(title: title)
+                                }
+                            }
+                        }
+                        .padding()
                     }
                 }
             }
-            .navigationTitle("Movies & TV Shows")
+            .navigationTitle("Discover")
             .onAppear {
-                vm.fetchTitles()
-            }
-            .onChange(of: selectedCategory) { value in
-                vm.category = value
-                vm.fetchTitles()
+                viewModel.fetchTitles()
             }
         }
     }
 }
+
 
 // MARK: - Title Row View
 struct TitleRowView: View {
@@ -77,6 +76,7 @@ struct TitleRowView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title.title)
                     .font(.headline)
+                    
                     .bold()
                 Text("Year: \(title.year ?? 0)")
                     .font(.subheadline)
@@ -90,7 +90,7 @@ struct TitleRowView: View {
                             .font(.subheadline)
                     }
                 }
-            }
+            }.foregroundStyle(.black)
             Spacer()
         }
         .padding(.vertical, 8)

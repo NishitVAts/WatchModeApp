@@ -1,8 +1,8 @@
 //
-//  Model.swift
+//  DetailScreen.swift
 //  WatchModeApp
 //
-//  Created by Nishit Vats on 03/02/25.
+//  Created by Nishit Vats on 04/02/25.
 //
 
 import Foundation

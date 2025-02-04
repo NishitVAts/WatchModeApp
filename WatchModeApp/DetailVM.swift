@@ -1,9 +1,10 @@
 //
-//  DetailVM.swift
+//  DetailScreen.swift
 //  WatchModeApp
 //
 //  Created by Nishit Vats on 04/02/25.
 //
+
 import Foundation
 import Combine
 
