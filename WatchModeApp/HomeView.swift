@@ -7,15 +7,16 @@
 
 import SwiftUI
 
-
-
-struct ContentView: View {
+struct HomeView: View {
     @StateObject private var viewModel = TitleViewModel()
-    @State private var showMovies = true
+    
+    @State private var showMovies = false
 
     var displayedTitles: [TitleModel] {
         showMovies ? viewModel.movies : viewModel.tvShows
     }
+    @State var alertMessage:String?
+    @State var showAlert = false
 
     var body: some View {
         NavigationView {
@@ -36,9 +37,14 @@ struct ContentView: View {
                    
                         .padding()
                 } else if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding()
+                    VStack{
+                        ContentUnavailableView(
+                            "No Internet Connection",
+                            systemImage: "wifi.exclamationmark",
+                            description: Text("\(errorMessage)")
+                        )
+                    }
+                    
                 } else {
                     ScrollView {
                         LazyVStack {
@@ -55,6 +61,11 @@ struct ContentView: View {
             .navigationTitle("Discover")
             .onAppear {
                 viewModel.fetchTitles()
+            }
+            .alert("\(alertMessage ?? "")", isPresented: $showAlert) {
+                HStack{
+                    Text("Ok")
+                }
             }
         }
     }
@@ -146,5 +157,5 @@ struct TitleRowSkeletonView: View {
 
 
 #Preview {
-    ContentView()
+    HomeView()
 }

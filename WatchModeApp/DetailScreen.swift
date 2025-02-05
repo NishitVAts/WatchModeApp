@@ -15,20 +15,22 @@ struct DetailView: View {
         ZStack{
             if viewModel.isLoading {
                 DetailViewSkeletonView()
-            }else{
+            }else if viewModel.detail != nil{
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         // Poster Image
                         if let posterURL = viewModel.detail?.poster {
                             AsyncImage(url: URL(string: posterURL)) { image in
                                 image.resizable()
+                                    .scaledToFit()
                             } placeholder: {
                                 RoundedRectangle(cornerRadius: 10)
                                     .fill(Color.gray.opacity(0.3))
                                     .frame(height: 300)
                             }
-                            .frame(maxWidth: .infinity)
+                            .frame(maxWidth: .infinity,maxHeight: 300)
                             .cornerRadius(10)
+                            
                         }
 
                         // Title & Year
@@ -94,6 +96,14 @@ struct DetailView: View {
                         }
                     }
                     .padding()
+                }
+            }else if let errorMessage = viewModel.errorMessage{
+                VStack{
+                    ContentUnavailableView(
+                        "No Internet Connection",
+                        systemImage: "wifi.exclamationmark",
+                        description: Text("\(errorMessage)")
+                    )
                 }
             }
         }

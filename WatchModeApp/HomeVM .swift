@@ -68,4 +68,3 @@ class TitleViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 }
-
